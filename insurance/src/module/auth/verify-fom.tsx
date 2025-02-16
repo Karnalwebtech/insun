@@ -61,7 +61,7 @@ export function VerifyForm({
     };
     try {
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
-      const res = await fetch("http://localhost:9000/api/v1/auth/verify-otp", {
+      const res = await fetch(`${process.env.BASE_URL}/api/v1/auth/verify-otp`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -102,7 +102,7 @@ export function VerifyForm({
     try {
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
       setResendDisabled(true);
-      const res = await fetch("http://localhost:9000/api/v1/auth/resend-otp", {
+      const res = await fetch(`${process.env.BASE_URL}/api/v1/auth/resend-otp`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",

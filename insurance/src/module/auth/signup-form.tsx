@@ -3,14 +3,12 @@
 import { useState } from "react";
 import { useSessionStorage } from "@/utils/setSessionData";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type React from "react"; // Added import for React
-import { SocialLoginBtns } from "@/components/buttons/social-login-btns";
 import { GeneralBtn } from "@/components/buttons/general-btn";
 import LazyImage from "@/components/LazyImage";
 import { encryptValue } from "@/utils/crypto";
@@ -59,11 +57,13 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       email,
       password,
       phone,
+      provider: "credentials",
+      image: "",
     };
     try {
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
       const res: Response = await fetch(
-        "http://localhost:9000/api/v1/auth/register",
+        `${process.env.BASE_URL}/api/v1/auth/register`,
         {
           method: "POST",
           headers: {
@@ -81,7 +81,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
           description: response.message || "An error occurred",
           variant: "destructive",
         });
-        return
+        return;
       }
       setSessionData("token", response.token, 10);
       toast({
@@ -158,12 +158,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Password</Label>
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm text-blue hover:underline underline-offset-2"
-                    >
-                      Forgot your password?
-                    </Link>
+                    
                   </div>
                   <Input
                     id="password"
@@ -178,7 +173,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
               </div>
               <div className="w-full">
                 {" "}
-                <GeneralBtn type="submit" title="Sign in" loader={isLoading} />
+                <GeneralBtn type="submit" title="Sign up" loader={isLoading} />
               </div>
               <div className="relative text-center">
                 <span className="bg-background px-2 text-sm text-muted-foreground relative z-10">
@@ -188,9 +183,9 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                   <span className="w-full border-t" />
                 </div>
               </div>
-              <div className="pt-0 grid grid-cols-1 gap-4">
+              {/* <div className="pt-0 grid grid-cols-1 gap-4">
                 <SocialLoginBtns />
-              </div>
+              </div> */}
               <div className="text-center text-sm">
                 Already have an account?{" "}
                 <a href="/sign-in" className="underline underline-offset-4">

@@ -14,19 +14,22 @@ export const registerUser = async (
   next: NextFunction
 ) => {
   console.log("Registering user", req.body);
-  const { name, email, password, phone } = req.body;
-  if (!name || !email || !password || !phone) {
+  const { name, email, password, phone, image, provider } = req.body;
+  if (!name || !email || !password) {
     return next(new ErrorHandler("All fields are required.", 400));
   }
   const isValidEmail = (email: string): boolean => /^\S+@\S+\.\S+$/.test(email);
   if (!isValidEmail(email)) {
     return next(new ErrorHandler("Invalid email format.", 400));
   }
-  const isValidPhoneNumber = (phone: string): boolean => /^\d{10}$/.test(phone);
-  if (!isValidPhoneNumber(phone)) {
-    return next(
-      new ErrorHandler("Phone number must be exactly 10 digits.", 400)
-    );
+  if (phone) {
+    const isValidPhoneNumber = (phone: string): boolean =>
+      /^\d{10}$/.test(phone);
+    if (!isValidPhoneNumber(phone)) {
+      return next(
+        new ErrorHandler("Phone number must be exactly 10 digits.", 400)
+      );
+    }
   }
 
   const Email = email.toLowerCase();
@@ -45,6 +48,8 @@ export const registerUser = async (
         existingUser.verifyToken = verifyToken!;
         existingUser.verifyTokenExpiry = verifyTokenExpiry;
         existingUser.phoneNumber = phone;
+        existingUser.provider = provider;
+        existingUser.image = image && image !== "" ? image : null;
         await existingUser.save();
 
         await OTPModel.findOneAndUpdate(
@@ -83,8 +88,9 @@ export const registerUser = async (
       email: Email,
       password: hashedPassword,
       verifyToken,
-      provider: "credentials",
+      provider: provider || null,
       verifyTokenExpiry,
+      image: image && image !== "" ? image : null,
       isVerified: false,
     });
 
@@ -105,6 +111,50 @@ export const registerUser = async (
       message: "User created successfully. Please verify your email.",
       success: true,
       token: verifyToken,
+    });
+  } catch (error) {
+    console.error(error);
+    return next(new ErrorHandler("An unknown error occurred", 500));
+  }
+};
+
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(new ErrorHandler("All fields are required.", 400));
+  }
+  const isValidEmail = (email: string): boolean => /^\S+@\S+\.\S+$/.test(email);
+  if (!isValidEmail(email)) {
+    return next(new ErrorHandler("Invalid email format.", 400));
+  }
+
+  const Email = email.toLowerCase();
+  try {
+    const existingUser = await User.findOne({ email: Email });
+    if (!existingUser) {
+      return next(new ErrorHandler("No user found with this email", 400));
+    }
+    if (!existingUser.isVerified) {
+      return next(new ErrorHandler("No user found with this email", 400));
+    }
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordCorrect) {
+      return next(new ErrorHandler("Incorrect password", 400));
+    }
+    if (existingUser.role !== "admin") {
+      return next(new ErrorHandler("Please contact to admin", 400));
+    }
+    res.status(201).json({
+      message: "User clogin successfully.",
+      success: true,
+      user: existingUser,
     });
   } catch (error) {
     console.error(error);

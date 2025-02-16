@@ -1,11 +1,8 @@
-import connectDB from "@/config/db";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
 import GoogleProvider from "next-auth/providers/google";
-import { User } from "@/model/user.model";
 import jwt from "jsonwebtoken";
-import genrateUUID from "@/utils/uuidgenrator";
+import { encryptValue } from "@/utils/crypto";
 
 interface UserType {
   id: string;
@@ -24,45 +21,43 @@ interface SocialProfile {
 }
 
 async function findOrCreateUser(profile: SocialProfile, provider: string) {
-  let user = await User.findOne({ email: profile.email });
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(
-    profile.email.split("@")[0] + provider,
-    salt
-  );
-  const totalUser = await User.countDocuments();
-  const userId: string = genrateUUID();
-  // New user registration flow
-  if (!user) {
-    const newUserId = `user_${
-      profile.name || profile.email.split("@")[0].slice(0, 3)
-    }-${userId}-${totalUser}`;
-    user = new User({
-      userId: newUserId,
-      name: profile.name || profile.email.split("@")[0],
-      email: profile.email,
-      image: profile.picture,
-      password: hashedPassword,
-      provider,
-      isVerified: true,
-    });
-    try {
-      await user.save();
-    } catch (error) {
-      throw new Error("FailedToCreateAccount" + error);
+  const data = {
+    name: profile.name || profile.email.split("@")[0],
+    email: profile.email,
+    image: profile.picture,
+    provider: provider,
+    password: profile.name || profile.email.split("@")[0],
+  };
+  try {
+    const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
+    const res: Response = await fetch(
+      `${process.env.BASE_URL}/api/v1/auth/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to create or find user");
     }
-  } else {
-    user.provider = provider;
-    try {
-      await user.save();
-    } catch (error) {
-      console.error("Error updating provider:", error);
-    }
+    const response = await res.json();
+    return {
+      id: response.user._id,
+      name: response.user.name,
+      email: response.user.email,
+      image: response.user.image,
+      isVerified: response.user.isVerified,
+    };
+  } catch (error) {
+    console.error("Error in findOrCreateUser:", error);
+    throw error;
   }
-
-  return user;
 }
-
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -82,38 +77,36 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email or username and password are required");
         }
-
-        await connectDB();
+        // await connectDB();
         try {
-          const user = await User.findOne({
-            email: credentials.email, // Using 'email' instead of 'email'
-          });
-
-          if (!user) {
-            throw new Error("No user found with this email or username");
-          }
-          if (!user.isVerified) {
-            throw new Error("Please verify your account before login");
-          }
-        
-          const isPasswordCorrect = await bcrypt.compare(
-            credentials.password,
-            user.password
+          const apiKey: string = await encryptValue(
+            process.env.NEXT_PUBLIC_API_KEY!
           );
-          if (!isPasswordCorrect) {
-            throw new Error("Incorrect password");
+          const response = await fetch(
+            `${process.env.BASE_URL}/api/v1/auth/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": apiKey,
+              },
+              body: JSON.stringify(credentials),
+            }
+          );
+          const res = await response.json();
+
+          if (!response.ok) {
+            throw new Error(res.message || "Something went wrong!");
           }
-          if(user.role !== "admin"){
-            throw new Error("Please contact to admin");
-          }
+
           return {
-            id: user._id as string,
-            name: user.name,
-            email: user.email,
-            image: user.image,
-            password: user.password,
-            provider: user.provider,
-            isVerified: user.isVerified,
+            id: res?.user._id as string,
+            name: res?.user.name,
+            email: res?.user.email,
+            image: res?.user.image,
+            password: res?.user.password,
+            provider: res?.user.provider,
+            isVerified: res?.user.isVerified,
           };
         } catch (error) {
           throw new Error(
@@ -130,8 +123,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       try {
-        await connectDB();
-
         if (account?.provider === "google") {
           const decodedToken = jwt.decode(account.id_token!) as SocialProfile;
           const existingUser = await findOrCreateUser(decodedToken, "google");

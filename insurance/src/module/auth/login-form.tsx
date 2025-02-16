@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type React from "react"; // Added import for React
-import { SocialLoginBtns } from "@/components/buttons/social-login-btns"
+// import { SocialLoginBtns } from "@/components/buttons/social-login-btns"
 import { GeneralBtn } from "@/components/buttons/general-btn"
 import LazyImage from "@/components/LazyImage";
 type LoginFormProps = React.ComponentProps<"div">;
@@ -113,9 +113,9 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                   <span className="w-full border-t" />
                 </div>
               </div>
-              <div className="pt-0 grid grid-cols-1 gap-4">
+              {/* <div className="pt-0 grid grid-cols-1 gap-4">
                 <SocialLoginBtns />
-              </div>
+              </div> */}
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <Link href="/sign-up" className="underline underline-offset-4">
