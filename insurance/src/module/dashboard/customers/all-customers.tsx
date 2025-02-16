@@ -198,7 +198,7 @@ const CustomerList: React.FC = () => {
                 data_length={response?.dataCounter || 10}
                 isLoading={loading}
             />
-            <DrawerComponent title="Custom Title" description="This is a custom description." isOpen={isOpen} setIsOpen={setIsOpen}>
+            <DrawerComponent title="" description="" isOpen={isOpen} setIsOpen={setIsOpen}>
                 <ViewCustomerDetails validID={customerId}/>
             </DrawerComponent>
         </>

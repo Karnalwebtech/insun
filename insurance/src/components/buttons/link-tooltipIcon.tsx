@@ -5,19 +5,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
-interface TooltipBtnIconProps {
+interface LinkTooltipBtnIconProps {
   icon: React.ReactNode;
   title: string | number;
+  url: string;
+  variant?: "ghost" | "link" | "default" | "destructive" | "outline" | "secondary" | null | undefined;
 }
-export function TooltipBtnIcon({ icon, title }: TooltipBtnIconProps) {
+export function LinkTooltipBtnIcon({ icon, title,url,variant="ghost" }: LinkTooltipBtnIconProps) {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon">
-            {icon}
-          </Button>
+          <Link href={url}>
+            <Button variant={variant} size="icon">
+              {icon}
+            </Button>
+          </Link>
         </TooltipTrigger>
         <TooltipContent>
           <p>{title}</p>

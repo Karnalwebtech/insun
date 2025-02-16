@@ -51,7 +51,7 @@ const UserSchema = new Schema<IUser>(
       default: "user",
     },
     dateOfBirth: Date,
-    phoneNumber: { type: String, unique: true },
+    phoneNumber: { type: String},
     address: { type: Schema.Types.ObjectId },
     socialMediaProfiles: [
       {

@@ -10,10 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type React from "react"; // Added import for React
-import { SocialLoginBtns } from "@/components/buttons/social-login-btns"
-import { GeneralBtn } from "@/components/buttons/general-btn"
+import { SocialLoginBtns } from "@/components/buttons/social-login-btns";
+import { GeneralBtn } from "@/components/buttons/general-btn";
 import LazyImage from "@/components/LazyImage";
-import { Checkbox } from "@/components/ui/checkbox";
+import { encryptValue } from "@/utils/crypto";
 type SignUpFormProps = React.ComponentProps<"div">;
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
@@ -21,44 +21,67 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [isAgent, setIsAgent] = useState<boolean>(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string, name?: string, role?: string }>({})
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    name?: string;
+    phone?: string;
+  }>({});
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    setErrors({})
+    setErrors({});
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const role = isAgent
 
-    const newErrors: { name?: string; email?: string; password?: string; role?: string } = {};
+    const newErrors: {
+      name?: string;
+      email?: string;
+      password?: string;
+      phone?: string;
+    } = {};
     if (!name) newErrors.name = "Full name is required";
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
+    if (!phone) newErrors.phone = "Phone is required";
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      setIsLoading(false)
-      return
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
     }
     const data = {
-      name, email, password, role
+      name,
+      email,
+      password,
+      phone,
     };
     try {
-      const res: Response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
+      const res: Response = await fetch(
+        "http://localhost:9000/api/v1/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+          },
+          body: JSON.stringify(data),
+        }
+      );
       const response = await res.json();
-
       if (!res.ok) {
-        throw new Error(response.message);
+        console.log(response);
+        toast({
+          title: "Error",
+          description: response.message || "An error occurred",
+          variant: "destructive",
+        });
+        return
       }
       setSessionData("token", response.token, 10);
       toast({
@@ -67,8 +90,8 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       });
 
       router.push("/verify");
-
     } catch (error) {
+      console.log(error);
       toast({
         title: "Error",
         description:
@@ -79,7 +102,6 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -103,9 +125,23 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                     placeholder="johndoe"
                     className={errors.name ? "border-red-500" : ""}
                   />
-                  {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                  {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name}</p>
+                  )}
                 </div>
-
+                <div className="grid gap-2">
+                  <Label htmlFor="mobileno">Mobile number</Label>
+                  <Input
+                    id="mobileno"
+                    name="phone"
+                    type="text"
+                    placeholder="9876543210"
+                    className={errors.name ? "border-red-500" : ""}
+                  />
+                  {errors.name && (
+                    <p className="text-sm text-red-500">{errors.phone}</p>
+                  )}
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -115,7 +151,9 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                     placeholder="m@example.com"
                     className={errors.email ? "border-red-500" : ""}
                   />
-                  {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                  {errors.email && (
+                    <p className="text-sm text-red-500">{errors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -127,15 +165,21 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                       Forgot your password?
                     </Link>
                   </div>
-                  <Input id="password" name="password" type="password" className={errors.password ? "border-red-500" : ""} />
-                  {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-                </div>
-                <div className="space-y-2 flex gap-2 items-center">
-                  <Checkbox id="agent" checked={isAgent} onCheckedChange={() => setIsAgent(!isAgent)} />
-                  <Label style={{margin:"0px !important"}} htmlFor="agent">I am a Insurance Officer</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    className={errors.password ? "border-red-500" : ""}
+                  />
+                  {errors.password && (
+                    <p className="text-sm text-red-500">{errors.password}</p>
+                  )}
                 </div>
               </div>
-              <div className="w-full">             <GeneralBtn type="submit" title="Sign in" loader={isLoading} /></div>
+              <div className="w-full">
+                {" "}
+                <GeneralBtn type="submit" title="Sign in" loader={isLoading} />
+              </div>
               <div className="relative text-center">
                 <span className="bg-background px-2 text-sm text-muted-foreground relative z-10">
                   Or continue with
@@ -156,7 +200,12 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             </form>
           </div>
           <div className="relative hidden bg-muted md:block">
-            <LazyImage src="/assets/img.webp" alt="Lazy loaded image" width={1920} height={1080} />
+            <LazyImage
+              src="/assets/img.webp"
+              alt="Lazy loaded image"
+              width={1920}
+              height={1080}
+            />
           </div>
         </CardContent>
       </Card>

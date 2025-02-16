@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { encryptValue } from "@/utils/crypto";
 
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
@@ -27,15 +28,21 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
+      const response = await fetch(
+        "http://localhost:9000/api/v1/auth/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.message || "Something wrong please try again after some time");
+        throw new Error(
+          data?.message || "Something wrong please try again after some time"
+        );
       }
       router.push("/sign-in");
       toast({

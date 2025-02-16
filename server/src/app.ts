@@ -1,30 +1,32 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import router from "./routes/customer-route";
 import errorMiddleware from "./middlewares/error";
 // import { Request } from "express";
 // import rateLimit from "express-rate-limit";
 // import helmet from "helmet";
 const app = express();
 app.disable("x-powered-by");
-app.use(cookieParser())
-app.use(express.json())
-app.use(express.urlencoded({extended:true}));
-app.use(cors({
-    origin:["http://localhost:3000"],
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
-        "Content-Type",
-        "Authorization",
-        "cookies",
-        "X-CSRF-Token","x-api-key",
-      ],
-      credentials: true,
-      maxAge: 600,
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
-}))
+      "Content-Type",
+      "Authorization",
+      "cookies",
+      "X-CSRF-Token",
+      "x-api-key",
+    ],
+    credentials: true,
+    maxAge: 600,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+);
 // app.set("trust proxy", 1);
 // const limiter = rateLimit({
 //     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -60,17 +62,13 @@ app.use(cors({
 //     })
 //   );
 
-
-
-
-
-
-
-
 // async function getUserKeyFromDB(apiKey: string): Promise<string> {
 //     // Simulate a database lookup
 //     return apiKey ? `user-${apiKey}` : "default-user";
 //   }
-app.use('/api/v1',router)
+import customerRouter from "./routes/customer-route";
+import authRouter from "./routes/auth-route";
+app.use("/api/v1", customerRouter);
+app.use("/api/v1", authRouter);
 app.use(errorMiddleware);
 export default app;

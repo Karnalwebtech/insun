@@ -10,7 +10,7 @@ export interface IUser extends Document {
   isVerified?: boolean;
   forgotPasswordToken?: string;
   forgotPasswordTokenExpiry?: Date;
-  verifyToken?: string;
+  verifyToken?: string | undefined;
   verifyTokenExpiry?: Date;
   role: "user" | "admin" | "agent";
   dashboard: "user" | "admin" | "agent";
@@ -37,10 +37,10 @@ const UserSchema = new Schema<IUser>(
   {
     userId: { type: String, required: true },
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true },
     password: { type: String, required: true },
     provider: { type: String, default: null },
-    image: { type: String, default: null},
+    image: { type: String, default: null },
     isVerified: { type: Boolean, default: false },
     verifyToken: String,
     verifyTokenExpiry: Date,
@@ -51,7 +51,8 @@ const UserSchema = new Schema<IUser>(
       default: "user",
     },
     dateOfBirth: Date,
-    phoneNumber: { type: String, unique: true },
+    phoneNumber: { type: String },
+
     address: { type: Schema.Types.ObjectId },
     socialMediaProfiles: [
       {

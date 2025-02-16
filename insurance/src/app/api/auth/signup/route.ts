@@ -18,10 +18,11 @@ export async function POST(req: Request) {
     const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
     const otp: string = await OTPGenerator(6);
     // Check if user already exists
-    const existingUser = await User.findOne({email});
+    const Email =email.toLowerCase();
+    const existingUser = await User.findOne({email:Email});
 
     if (existingUser) {
-      if (existingUser.email === email && existingUser.isVerified) {
+      if (existingUser.email.toLowerCase() === Email && existingUser.isVerified) {
         return NextResponse.json(
           { message: "Email already exists" },
           { status: 400 }
@@ -59,7 +60,7 @@ export async function POST(req: Request) {
     const newUser = new User({
       userId: newUserId,
       name,
-      email,
+      email:Email,
       role: role ? "agent" : "user",
       password: hashedPassword,
       verifyToken,
@@ -71,12 +72,12 @@ export async function POST(req: Request) {
     await newUser.save();
     await OTPModel.create({
       userId: newUser._id,
-      email: email,
+      email: Email,
       token: verifyToken,
       otpCode: Number(otp),
     });
 
-    await sendVerificationEmail(email, Number(otp));
+    await sendVerificationEmail(Email, Number(otp));
 
     return NextResponse.json({
       message: "User created successfully. Please verify your email.",
@@ -84,6 +85,7 @@ export async function POST(req: Request) {
       token: verifyToken,
     });
   } catch (error) {
+    console.log(error)
     return NextResponse.json({ message: error instanceof Error ? error.message : "An unknown error occurred" }, { status: 500 });
   }
 }

@@ -18,6 +18,7 @@ import {
   LockOpenIcon as LockClosedIcon,
   ArrowLeftIcon as ArrowPathIcon,
 } from "lucide-react";
+import { encryptValue } from "@/utils/crypto";
 
 export function VerifyForm({
   className,
@@ -59,10 +60,12 @@ export function VerifyForm({
       token: token.value,
     };
     try {
-      const res = await fetch("/api/auth/verify", {
+      const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
+      const res = await fetch("http://localhost:9000/api/v1/auth/verify-otp", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
+          "x-api-key": apiKey,
         },
         body: JSON.stringify(data),
       });
@@ -81,7 +84,8 @@ export function VerifyForm({
     } catch (error) {
       toast({
         title: "Error",
-        description:  error instanceof Error ? error.message : "An error occurred",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
     }
@@ -96,11 +100,13 @@ export function VerifyForm({
       token: token.value,
     };
     try {
+      const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
       setResendDisabled(true);
-      const res = await fetch("/api/auth/re-send", {
+      const res = await fetch("http://localhost:9000/api/v1/auth/resend-otp", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
+          "x-api-key": apiKey,
         },
         body: JSON.stringify(data),
       });
@@ -124,7 +130,8 @@ export function VerifyForm({
     } catch (error) {
       toast({
         title: "Error",
-        description:  error instanceof Error ? error.message : "An error occurred",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
       setResendDisabled(false);

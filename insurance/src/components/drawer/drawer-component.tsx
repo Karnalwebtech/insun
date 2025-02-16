@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -10,14 +10,18 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
+import { VisuallyHidden } from "../ui/visually-hidden";
 
 interface DrawerComponentProps {
-  title?: string
-  description?: string
-  children: React.ReactNode
-  isOpen: boolean
-  setIsOpen: (value: boolean) => void
+  title?: string;
+  description?: string;
+  children: React.ReactNode;
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  onSubmit?: () => void;
 }
 
 export function DrawerComponent({
@@ -26,35 +30,52 @@ export function DrawerComponent({
   children,
   isOpen,
   setIsOpen,
+  showHeader = false,
+  showFooter = false,
+  onSubmit,
 }: DrawerComponentProps) {
-  const contentRef = React.useRef<HTMLDivElement>(null)
-
+  const contentRef = React.useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
+
+  const handleSubmit = () => {
+    if (onSubmit) {
+      onSubmit();
+    }
+    handleClose();
+  };
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-     
       <DrawerContent>
-        <div ref={contentRef} className="mx-auto w-full max-w-sm">
-          <DrawerHeader>
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
-          </DrawerHeader>
-          <div>{children}</div>
-          <DrawerFooter>
-            <Button>Submit</Button>
-            <DrawerClose asChild>
-              <Button variant="outline" onClick={handleClose}>
-                Close
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
+        <div ref={contentRef} className="flex flex-col h-full">
+          {showHeader ? (
+            <DrawerHeader>
+              <DrawerTitle>{title}</DrawerTitle>
+              {description && (
+                <DrawerDescription>{description}</DrawerDescription>
+              )}
+            </DrawerHeader>
+          ) : (
+            <VisuallyHidden>
+              <DrawerTitle>{title}</DrawerTitle>
+            </VisuallyHidden>
+          )}
+          <div className="flex-1 overflow-y-auto p-4">{children}</div>
+          {showFooter && (
+            <DrawerFooter>
+              <Button onClick={handleSubmit}>Submit</Button>
+              <DrawerClose asChild>
+                <Button variant="outline" onClick={handleClose}>
+                  Close
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          )}
         </div>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
-

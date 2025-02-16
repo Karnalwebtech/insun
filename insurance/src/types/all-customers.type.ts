@@ -86,3 +86,8 @@ export interface ApiResponse {
     dataCounter: number;
     resultPerPage: number;
 }
+export interface DetailsResponse {
+    success: boolean;
+    message?:string;
+    result: CustomerProps;
+}
