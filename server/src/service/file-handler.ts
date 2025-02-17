@@ -14,23 +14,24 @@ const fileHandler = async (req: Request, next: NextFunction): Promise<Record<str
             processedFiles = Object.values(files).flat();
         }
         const uploadedImage: File_Uploader[] | void | unknown[] = await ImageUploader(processedFiles, next);
-        if (!uploadedImage) {
-            return next(new ErrorHandler("Image upload failed on the server", 404));
-        }
-        const imageData = await addFiles(
-            processedFiles,
-            uploadedImage,
-            user,
-            next,
-        );
+        // const uploadedImage: File_Uploader[] | void | unknown[] = await ImageUploader(processedFiles, next);
+        // if (!uploadedImage) {
+        //     return next(new ErrorHandler("Image upload failed on the server", 404));
+        // }
+        // const imageData = await addFiles(
+        //     processedFiles,
+        //     uploadedImage,
+        //     user,
+        //     next,
+        // );
 
-        if (!imageData) {
-            return next(new ErrorHandler("Image not added to database", 404));
-        }
-        return imageData.reduce((acc, { fieldname, _id }) => {
-            acc[fieldname] = _id; 
-            return acc;
-        }, {} as Record<string, any>);
+        // if (!imageData) {
+        //     return next(new ErrorHandler("Image not added to database", 404));
+        // }
+        // return imageData.reduce((acc, { fieldname, _id }) => {
+        //     acc[fieldname] = _id; 
+        //     return acc;
+        // }, {} as Record<string, any>);
 
 
     } catch (err) {
