@@ -56,7 +56,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
 
       const res = await fetch(
-        `${process.env.BASE_URL}/api/v1/action/${validID}`,
+        `https://insurance-backend-3qao.onrender.com/api/v1/action/${validID}`,
         {
           method: "GET",
           credentials: "include",

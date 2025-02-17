@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
     try {
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
       const response = await fetch(
-        `${process.env.BASE_URL}/api/v1/auth/forgot-password`,
+        `https://insurance-backend-3qao.onrender.com/api/v1/auth/forgot-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json", "x-api-key": apiKey },

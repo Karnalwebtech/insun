@@ -63,7 +63,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     try {
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
       const res: Response = await fetch(
-        `${process.env.BASE_URL}/api/v1/auth/register`,
+        `https://insurance-backend-3qao.onrender.com/api/v1/auth/register`,
         {
           method: "POST",
           headers: {

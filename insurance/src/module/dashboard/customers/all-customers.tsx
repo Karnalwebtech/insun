@@ -43,7 +43,7 @@ const CustomerList: React.FC = () => {
             const token = await encryptValue(session.user.email);
             const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
 
-            const res = await fetch(`${process.env.BASE_URL}/api/v1/all-customer?rowsPerPage=${rowsPerPage}&page=${page}`, {
+            const res = await fetch(`https://insurance-backend-3qao.onrender.com/api/v1/all-customer?rowsPerPage=${rowsPerPage}&page=${page}`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -84,7 +84,7 @@ const CustomerList: React.FC = () => {
         const token = await encryptValue(session.user.email);
         const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
         try {
-            const res = await fetch(`${process.env.BASE_URL}/api/v1/action/${removeId}`, {
+            const res = await fetch(`https://insurance-backend-3qao.onrender.com/api/v1/action/${removeId}`, {
                 method: "DELETE",
                 credentials: "include",
                 headers: {

@@ -31,7 +31,7 @@ async function findOrCreateUser(profile: SocialProfile, provider: string) {
   try {
     const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
     const res: Response = await fetch(
-      `${process.env.BASE_URL}/api/v1/auth/register`,
+      `https://insurance-backend-3qao.onrender.com/api/v1/auth/register`,
       {
         method: "POST",
         headers: {
@@ -83,7 +83,7 @@ export const authOptions: NextAuthOptions = {
             process.env.NEXT_PUBLIC_API_KEY!
           );
           const response = await fetch(
-            `${process.env.BASE_URL}/api/v1/auth/login`,
+            `https://insurance-backend-3qao.onrender.com/api/v1/auth/login`,
             {
               method: "POST",
               headers: {
