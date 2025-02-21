@@ -69,7 +69,7 @@ export default function CustomerForm() {
       setIsLoading(true)
       const token: string = await encryptValue(sessionData)
       const apiKey: string = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!)
-      const response = await fetch(`https://insurance-backend-3qao.onrender.com/api/v1/add-customer`, {
+      const response = await fetch(`http://localhost:9000/api/v1/add-customer`, {
         method: "POST",
         credentials: "include",
         headers: {

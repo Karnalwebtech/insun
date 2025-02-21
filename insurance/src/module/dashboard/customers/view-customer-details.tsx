@@ -56,7 +56,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
       const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
 
       const res = await fetch(
-        `https://insurance-backend-3qao.onrender.com/api/v1/action/${validID}`,
+        `http://localhost:9000/api/v1/action/${validID}`,
         {
           method: "GET",
           credentials: "include",
@@ -93,10 +93,9 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
   const formatDate = (date: string) => {
     return format(new Date(date), "PPP")
   }
+  if (loading) return <LoadingPage />
   if (!response) return <p>No data found</p>;
-  return loading ? (
-    <LoadingPage />
-  ) : (
+  return (
     <>
       <div className="bg-gray-50/50">
         {/* Main Content */}
@@ -325,7 +324,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                               {response.addhar_card.originalname}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => window.open(response.addhar_card.path, "_blank")}>
                             View
                           </Button>
                         </div>
@@ -338,7 +337,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                               {response.pan_card.originalname || "Not uploaded"}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => window.open(response.pan_card.path, "_blank")}>
                             View
                           </Button>
                         </div>
@@ -357,7 +356,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                                 "Not uploaded"}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => window.open(response.profile_image.path, "_blank")}>
                             View
                           </Button>
                         </div>
@@ -372,7 +371,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                               {response.document.originalname || "Not uploaded"}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => window.open(response.document.path, "_blank")}>
                             View
                           </Button>
                         </div>

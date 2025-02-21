@@ -3,12 +3,15 @@ import dotenv from "dotenv";
 
 dotenv.config(); // Load environment variables
 
+if (!process.env.CLOUD_NAME || !process.env.CLOUD_API_KEY || !process.env.CLOUD_API_SECRET) {
+  throw new Error("Cloudinary config values are missing in .env file");
+}
+
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: "dzkxzczr1",
-  api_key: "712252472624356",
-  api_secret:
-    "CLOUDINARY_URL=cloudinary://712252472624356:zgNbf_rOG7z5gIcGZlLKQ-5XU4U@dzkxzczr1", // Click 'View API Keys' above to copy your API secret
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 export default cloudinary;
 

@@ -6,15 +6,23 @@ export interface File_Uploader {
     success: boolean;
     file: string;
     url: string;
+    signature: string,
+    bytes: number,
+    asset_folder: string,
+    fieldname: string,
+    originalname: string,
+    publicId: string,
+    format: string,
+    width: number,
+    height: number
 }
 
 const addFiles = async (
-    data: Express.Multer.File[] | Record<string, Express.Multer.File[]>, 
-    file_uploader: unknown[] | File_Uploader[] | void, 
-    user: IUser | undefined, 
+    file_uploader: unknown[] | File_Uploader[] | void,
+    user: IUser | undefined,
     next: NextFunction
 ) => {
-    if(!user){
+    if (!user) {
         return null
     }
     try {
@@ -27,23 +35,26 @@ const addFiles = async (
         let files_arr: any[] = [];
 
         // Normalize data into an array of files
-        const files = Array.isArray(data) 
-            ? data 
-            : Object.values(data).flat();
+        const files = Array.isArray(file_uploader)
+            ? file_uploader
+            : Object.values(file_uploader).flat();
 
         files_arr = files.map((file, i) => {
             const uploader = (file_uploader as File_Uploader[])[i]; // Type assertion
 
             return {
                 _no: counter + 1 + i,
-                fieldname: file.fieldname,
-                originalname: file.originalname,
-                encoding: file.encoding,
-                mimetype: file.mimetype,
-                destination: file.destination,
-                filename: file.filename,
-                path: uploader?.url || "", 
-                size: file.size,
+                fieldname: uploader.fieldname,
+                publicId: uploader.publicId,
+                signature: uploader.signature,
+                originalname: uploader.originalname,
+                size: uploader.bytes,
+                format: uploader.format,
+                destination: uploader.asset_folder,
+                filename: uploader.originalname,
+                path: uploader?.url || "",
+                width: uploader?.width,
+                height: uploader?.height || "",
                 user: user._id,
             };
         });
@@ -52,7 +63,7 @@ const addFiles = async (
 
         const addedFiles = await fileModel.insertMany(files_arr);
         return addedFiles;
-        
+
     } catch (error) {
         next(error);
     }

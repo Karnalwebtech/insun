@@ -33,6 +33,7 @@ export interface DocumentInfo {
     _id: string;
     no: number;
     originalname: string;
+    url: string;
     encoding: string;
     filename: string | null;
     fieldname: string;

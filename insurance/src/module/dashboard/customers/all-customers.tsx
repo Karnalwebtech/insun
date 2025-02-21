@@ -43,7 +43,7 @@ const CustomerList: React.FC = () => {
             const token = await encryptValue(session.user.email);
             const apiKey = await encryptValue(process.env.NEXT_PUBLIC_API_KEY!);
 
-            const res = await fetch(`https://insurance-backend-3qao.onrender.com/api/v1/all-customer?rowsPerPage=${rowsPerPage}&page=${page}`, {
+            const res = await fetch(`http://localhost:9000/api/v1/all-customer?rowsPerPage=${rowsPerPage}&page=${page}`, {
                 method: "GET",
                 credentials: "include",
                 headers: {

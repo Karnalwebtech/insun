@@ -4,9 +4,18 @@ export interface IFile extends Document {
   no: number;
   originalname: string;
   encoding: string;
-  mimetype: string;
   fieldname: string;
   filename: string;
+
+  signature: string,
+  destination: string,
+  publicId: string,
+  format: string,
+  width: number,
+  height: number
+
+
+
   path: string;
   size: number;
   altText: string;
@@ -26,6 +35,30 @@ const fileSchema: Schema<IFile> = new mongoose.Schema(
     originalname: {
       type: String,
       default: null,
+    },
+    signature: {
+      type: String,
+      default: null,
+    },
+    destination: {
+      type: String,
+      default: null,
+    },
+    publicId: {
+      type: String,
+      default: null,
+    },
+    format: {
+      type: String,
+      default: null,
+    },
+    width: {
+      type: Number,
+      default: 0,
+    },
+    height: {
+      type: Number,
+      default: 0,
     },
     encoding: {
       type: String,

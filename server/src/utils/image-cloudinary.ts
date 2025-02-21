@@ -1,66 +1,90 @@
-import { NextFunction } from "express";
-import ErrorHandler from "./errorHandler";
-import { getFirebaseInstance } from "../config/firebase";
-import { generateRandomId } from "./generateRandomId";
-import { File_Uploader } from "./file-controller";
-
-const ImageUploader = async (files:Express.Multer.File[], next: NextFunction):Promise<File_Uploader[] | unknown[] | void> => {
-    if (!files || !Array.isArray(files) || files.length === 0) {
-        return next(new ErrorHandler("No files uploaded.", 400));
-    }
-   
-    try {
-
-
-
-
-
-//         import express from "express";
-// import cloudinary from "../config/cloudinary.js";
-// import upload from "../middlewares/multer.js";
-// import Image from "../models/Image.js";
-
-// const router = express.Router();
-
-// // Upload Image to Cloudinary and Save to DB
-// router.post("/upload", upload.single("image"), async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ error: "No file uploaded" });
-//     }
-
-//     // Upload to Cloudinary
-//     const result = await cloudinary.uploader.upload_stream(
-//       { folder: "uploads" }, // Optional: Store inside a folder
-//       async (error, result) => {
-//         if (error) return res.status(500).json({ error: error.message });
-
-//         // Save URL & public_id to MongoDB
-//         const newImage = new Image({
-//           url: result.secure_url,
-//           public_id: result.public_id,
-//         });
-
-//         await newImage.save();
-
-//         res.status(201).json({ message: "Image uploaded", image: newImage });
-//       }
-//     );
-
-//     result.end(req.file.buffer); // Convert file to stream
-
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// export default router;
-
-        // return await Promise.all(uploadPromises);
-    } catch (error: any) {
-        console.error("Upload Error:", error); // Log the error
-        return next(new ErrorHandler(error.message, 500));
-    }
-
+import type { NextFunction, Express } from "express"
+import type { UploadApiResponse, UploadApiErrorResponse } from "cloudinary"
+import ErrorHandler from "./errorHandler"
+import cloudinary from "../config/cloudinary"
+export interface UploadedFile {
+    url: string
+    signature: string
+    resource_type: string
+    bytes: number
+    asset_folder: string
+    publicId: string
+    format: string
+    width: number
+    height: number
+    fieldname: string
+    originalname: string
 }
-export default ImageUploader;
+
+export interface UploadOptions {
+    folder: string
+    allowed_formats?: string[]
+    transformation?: any[]
+}
+
+
+
+const defaultOptions: UploadOptions = {
+    folder: "uploads",
+    allowed_formats: [
+        "jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "svg", // Image formats
+        "pdf" // PDF format
+    ],
+    transformation: [{ quality: "auto" }],
+}
+
+const uploadToCloudinary = (
+    file: Express.Multer.File,
+    options: UploadOptions = defaultOptions,
+): Promise<UploadedFile> => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            options,
+            (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
+                if (error || !result) {
+                    reject(new ErrorHandler(`Failed to upload image: ${error?.message || "Unknown error"}`, 500))
+                    return
+                }
+                resolve({
+                    signature: result.signature,
+                    resource_type: result.resource_type,
+                    bytes: result.bytes,
+                    asset_folder: result.asset_folder,
+                    fieldname: file.fieldname,
+                    originalname: file.originalname,
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    format: result.format,
+                    width: result.width,
+                    height: result.height,
+                })
+            },
+        )
+
+        uploadStream.end(file.buffer)
+    })
+}
+
+const ImageUploader = async (
+    files: Express.Multer.File[],
+    next: NextFunction,
+    options?: UploadOptions,
+): Promise<UploadedFile[]> => {
+    // Validate input
+    if (!files?.length) {
+        throw new ErrorHandler("No files provided for upload", 400)
+    }
+
+    try {
+        // Process files in parallel
+        const uploadPromises = files.map((file) => uploadToCloudinary(file, options))
+        const uploadedFiles = await Promise.all(uploadPromises)
+        return uploadedFiles
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown upload error"
+        throw new ErrorHandler(message, 500)
+    }
+}
+
+export default ImageUploader
+
