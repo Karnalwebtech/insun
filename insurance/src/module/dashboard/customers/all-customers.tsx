@@ -158,7 +158,7 @@ const CustomerList: React.FC = () => {
                                 <Eye /> View
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                className="cursor-pointer"
+                                className="cursor-not-allowed"
                                 onClick={() => router.push(`/karnalwebtech/post/categorie/${item._id}`)}
                             >
                                 <Pencil /> Edit
