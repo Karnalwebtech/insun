@@ -93,6 +93,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
   const formatDate = (date: string) => {
     return format(new Date(date), "PPP")
   }
+  console.log(response)
   if (loading) return <LoadingPage />
   if (!response) return <p>No data found</p>;
   return (
@@ -239,7 +240,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                       <div>
                         <p className="text-sm font-medium">Sum Insured</p>
                         <p className="text-sm text-muted-foreground">
-                          formatCurrency(String(Number.parseInt(response?.si)));
+                          {formatCurrency(response?.si)}
                         </p>
                       </div>
                       <div>
@@ -321,10 +322,10 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                           <div className="flex-1 space-y-1">
                             <p className="text-sm font-medium">Aadhar Card</p>
                             <p className="text-xs text-muted-foreground">
-                              {response.addhar_card.originalname}
+                              {response?.addhar_card?.originalname}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm" onClick={() => window.open(response.addhar_card.path, "_blank")}>
+                          <Button variant="outline" size="sm" onClick={() => window.open(response?.addhar_card?.path, "_blank")}>
                             View
                           </Button>
                         </div>
@@ -334,10 +335,10 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                           <div className="flex-1 space-y-1">
                             <p className="text-sm font-medium">PAN Card</p>
                             <p className="text-xs text-muted-foreground">
-                              {response.pan_card.originalname || "Not uploaded"}
+                              {response?.pan_card?.originalname || "Not uploaded"}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm" onClick={() => window.open(response.pan_card.path, "_blank")}>
+                          <Button variant="outline" size="sm" onClick={() => window.open(response?.pan_card?.path, "_blank")}>
                             View
                           </Button>
                         </div>
@@ -352,11 +353,11 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                           <div className="flex-1 space-y-1">
                             <p className="text-sm font-medium">Profile Image</p>
                             <p className="text-xs text-muted-foreground">
-                              {response.profile_image.originalname ||
+                              {response?.profile_image?.originalname ||
                                 "Not uploaded"}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm" onClick={() => window.open(response.profile_image.path, "_blank")}>
+                          <Button variant="outline" size="sm" onClick={() => window.open(response?.profile_image?.path, "_blank")}>
                             View
                           </Button>
                         </div>
@@ -368,10 +369,10 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                               Additional Document
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {response.document.originalname || "Not uploaded"}
+                              {response?.document?.originalname || "Not uploaded"}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm" onClick={() => window.open(response.document.path, "_blank")}>
+                          <Button variant="outline" size="sm" onClick={() => window.open(response?.document?.path, "_blank")}>
                             View
                           </Button>
                         </div>
