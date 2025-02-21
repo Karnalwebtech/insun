@@ -239,7 +239,7 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                       <div>
                         <p className="text-sm font-medium">Sum Insured</p>
                         <p className="text-sm text-muted-foreground">
-                          {formatCurrency(Number.parseInt(response.si))}
+                          formatCurrency(String(Number.parseInt(response?.si)));
                         </p>
                       </div>
                       <div>

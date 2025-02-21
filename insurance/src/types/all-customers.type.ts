@@ -13,7 +13,7 @@ export interface CustomerProps extends SearchableItem {
     dop: string;
     dor: string;
     issue_policy_year: string;
-    si: string;
+    si: number;
     amount: number;
     email: string;
     category: string;

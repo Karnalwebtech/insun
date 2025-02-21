@@ -9,7 +9,7 @@ export interface ICustomer extends Document {
     dop: string;
     dor: string;
     issue_policy_year: string;
-    si: string;
+    si: number;
     amount: number;
     email: string;
     category: string;
@@ -33,7 +33,7 @@ const customerSchema: Schema<ICustomer> = new mongoose.Schema(
         dop: { type: String, default: null },
         dor: { type: String, default: null },
         issue_policy_year: { type: String, default: null },
-        si: { type: String, default: null },
+        si: { type: Number, default: null },
         amount: { type: Number, default: 0 },
         email: { type: String, default: null }, // Fixed 'string' to 'String'
         category: { type: String, default: null }, // Fixed

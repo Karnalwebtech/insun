@@ -161,6 +161,7 @@ export default function CustomerForm() {
               errors={errors}
               label="S.I."
               name={"si"}
+              type="number"
             />
             <InputField
               control={control}
