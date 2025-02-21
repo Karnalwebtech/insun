@@ -185,8 +185,8 @@ export default function CustomerForm() {
             <SelectFields
               control={control}
               errors={errors}
-              label="Health Conditions"
-              name={"healthConditions"}
+              label="Premium Mode"
+              name={"premium_mode"}
               drop_down_selector={insurancePaymentModes}
             />
           </CardContent>

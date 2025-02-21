@@ -11,5 +11,5 @@ export const CustomerSchema = z.object({
     amount: z.string().min(1, "Amount is required"),
     email: z.string().email("Invalid email format"),
     category:z.string().min(1, "At least one category is required"),
-    healthConditions: z.string().min(1, "Health Condition is required"),
+    premium_mode: z.string().min(1, "Health Condition is required"),
 });

@@ -16,7 +16,7 @@ export const addCustomerController = async (req: Request, res: Response, next: N
         if (!filedata || typeof filedata !== "object") {
             return next(new ErrorHandler("File upload failed.", 400));
         }
-        const { fullname, policy_no, phone, dop, dor, issue_policy_year, si, amount, email, category, healthConditions } = req.body;
+        const { fullname, policy_no, phone, dop, dor, issue_policy_year, si, amount, email, category, premium_mode } = req.body;
         const counter = await CustomerModel.countDocuments();
         const customer = await CustomerModel.create({
             no: counter + 1,
@@ -26,7 +26,7 @@ export const addCustomerController = async (req: Request, res: Response, next: N
             document: filedata.addharCard,
             profile_image: filedata.addharCard,
             user: user._id,
-            fullname, policy_no, phone, dop, dor, issue_policy_year, si, amount, email, category, health_conditions: healthConditions
+            fullname, policy_no, phone, dop, dor, issue_policy_year, si, amount, email, category, premium_mode: premium_mode
         })
         res.status(201).json({
             success: true,

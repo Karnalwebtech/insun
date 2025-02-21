@@ -17,7 +17,7 @@ export interface CustomerProps extends SearchableItem {
     amount: number;
     email: string;
     category: string;
-    health_conditions: string;
+    premium_mode: string;
     addhar_card: DocumentInfo;
     pan_card: DocumentInfo;
     document: DocumentInfo;

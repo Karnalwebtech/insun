@@ -13,7 +13,7 @@ export interface ICustomer extends Document {
     amount: number;
     email: string;
     category: string;
-    health_conditions: string;
+    premium_mode: string;
     addhar_card: Types.ObjectId;
     pan_card: Types.ObjectId;
     document: Types.ObjectId;
@@ -37,7 +37,7 @@ const customerSchema: Schema<ICustomer> = new mongoose.Schema(
         amount: { type: Number, default: 0 },
         email: { type: String, default: null }, // Fixed 'string' to 'String'
         category: { type: String, default: null }, // Fixed
-        health_conditions: { type: String, default: null }, // Fixed
+        premium_mode: { type: String, default: null }, // Fixed
         addhar_card: { type: Schema.Types.ObjectId, ref: "File" }, // Change ref if needed
         pan_card: { type: Schema.Types.ObjectId, ref: "File" }, // Change ref if needed
         document: { type: Schema.Types.ObjectId, ref: "File" }, // Change ref if needed

@@ -289,15 +289,15 @@ const ViewCustomerDetails: React.FC<ViewCustomerDetailsProps> = ({
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Heart className="h-5 w-5" />
-                      Health Information
+                      Premium Mode
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div>
-                      <p className="text-sm font-medium">Health Conditions</p>
+                      <p className="text-sm font-medium">Premium Mode</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {response.health_conditions ||
-                          "No health conditions reported"}
+                        {response.premium_mode ||
+                          "No Premium mode"}
                       </p>
                     </div>
                   </CardContent>
