@@ -4,16 +4,17 @@ import cors from "cors";
 import errorMiddleware from "./middlewares/error";
 // import { Request } from "express";
 // import rateLimit from "express-rate-limit";
-// import helmet from "helmet";
+import helmet from "helmet";
 const app = express();
 app.disable("x-powered-by");
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json());app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://localhost:3000","https://insun.vercel.app"],
+    origin: ["http://localhost:3000","https://insun.vercel.app","https://insun.vercel.app/"],
     methods: ["GET", "POST", "PUT", "DELETE"],
+    exposedHeaders: "Set-Cookie",
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -22,9 +23,8 @@ app.use(
       "x-api-key",
     ],
     credentials: true,
-    maxAge: 600,
+    optionsSuccessStatus: 200,
     preflightContinue: false,
-    optionsSuccessStatus: 204,
   })
 );
 // app.set("trust proxy", 1);
